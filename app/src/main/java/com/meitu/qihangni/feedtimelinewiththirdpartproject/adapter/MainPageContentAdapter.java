@@ -36,14 +36,14 @@ public class MainPageContentAdapter extends RecyclerView.Adapter<MainPageContent
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.itemview_mainpagerecyclerview, null));
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
-        if (payloads.isEmpty()){
-            onBindViewHolder(holder,position);
-        }else {
-
-        }
-    }
+//    @Override
+//    public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
+//        if (payloads.isEmpty()){
+//            onBindViewHolder(holder,position);
+//        }else {
+//
+//        }
+//    }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {

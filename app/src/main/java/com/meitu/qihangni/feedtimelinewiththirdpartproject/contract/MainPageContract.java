@@ -1,13 +1,11 @@
 package com.meitu.qihangni.feedtimelinewiththirdpartproject.contract;
 
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.base.BaseContract;
-
 import java.util.List;
 
 /**
  * @author nqh 2018/7/16
  */
-public class MainPageContract extends BaseContract {
+public class MainPageContract {
     public interface Model {
         void loadPageContent(int pageid);
     }

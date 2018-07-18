@@ -48,10 +48,10 @@ public class MainPageContentAdapter extends RecyclerView.Adapter<MainPageContent
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if (mPageContentList.get(position).getRecommend_cover_pic() != null) {
-            Glide.with(mContext).load(mPageContentList.get(position).getRecommend_cover_pic()).into(holder.imgv_cover);
+            Glide.with(mContext).load(mPageContentList.get(position).getRecommend_cover_pic()).into(holder.mImageCover);
         }
-        holder.tv_content.setText(mPageContentList.get(position).getMedia().getQq_share_caption());
-        holder.tv_username.setText(mPageContentList.get(position).getMedia().getUser().getScreen_name());
+        holder.mTvContent.setText(mPageContentList.get(position).getMediaBean().getQq_share_caption());
+        holder.mTvUsername.setText(mPageContentList.get(position).getMediaBean().getUser().getScreen_name());
     }
 
     @Override
@@ -60,15 +60,15 @@ public class MainPageContentAdapter extends RecyclerView.Adapter<MainPageContent
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgv_cover;
-        TextView tv_username;
-        TextView tv_content;
+        ImageView mImageCover;
+        TextView mTvUsername;
+        TextView mTvContent;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            imgv_cover = itemView.findViewById(R.id.imgv_cover);
-            tv_content = itemView.findViewById(R.id.tv_content);
-            tv_username = itemView.findViewById(R.id.tv_username);
+            mImageCover = itemView.findViewById(R.id.imgv_cover);
+            mTvContent = itemView.findViewById(R.id.tv_content);
+            mTvUsername = itemView.findViewById(R.id.tv_username);
         }
     }
 }

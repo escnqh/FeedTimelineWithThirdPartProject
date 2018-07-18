@@ -2,8 +2,8 @@ package com.meitu.qihangni.feedtimelinewiththirdpartproject.model;
 
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.bean.PageContentBean;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.contract.MainPageContract;
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.webapi.DownLoadFeedApi;
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.webservice.DownLoadFeedService;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.web.DownLoadFeedApi;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.web.DownLoadFeedService;
 
 import java.util.ArrayList;
 import java.util.List;

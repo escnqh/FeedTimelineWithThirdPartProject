@@ -1,4 +1,4 @@
-package com.meitu.qihangni.feedtimelinewiththirdpartproject.webapi;
+package com.meitu.qihangni.feedtimelinewiththirdpartproject.web;
 
 import com.google.gson.GsonBuilder;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.IntegerGsonDeserializer;

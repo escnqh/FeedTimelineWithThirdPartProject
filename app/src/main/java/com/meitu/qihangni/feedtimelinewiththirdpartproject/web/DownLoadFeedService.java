@@ -1,4 +1,4 @@
-package com.meitu.qihangni.feedtimelinewiththirdpartproject.webservice;
+package com.meitu.qihangni.feedtimelinewiththirdpartproject.web;
 
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.bean.PageContentBean;
 

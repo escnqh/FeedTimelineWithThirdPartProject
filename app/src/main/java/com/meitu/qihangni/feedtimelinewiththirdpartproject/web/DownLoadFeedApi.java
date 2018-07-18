@@ -1,6 +1,4 @@
-package com.meitu.qihangni.feedtimelinewiththirdpartproject.webapi;
-
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.webservice.DownLoadFeedService;
+package com.meitu.qihangni.feedtimelinewiththirdpartproject.web;
 
 import retrofit2.Retrofit;
 

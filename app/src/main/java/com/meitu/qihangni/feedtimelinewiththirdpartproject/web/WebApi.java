@@ -1,9 +1,10 @@
 package com.meitu.qihangni.feedtimelinewiththirdpartproject.web;
 
 import com.google.gson.GsonBuilder;
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.IntegerGsonDeserializer;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.gsondeserializer.IntegerGsonDeserializer;
 
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -19,6 +20,7 @@ public abstract class WebApi {
         return new Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create(gsonBuilder.create()))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
     }
 

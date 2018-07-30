@@ -1,16 +1,19 @@
 package com.meitu.qihangni.feedtimelinewiththirdpartproject.model;
 
+import com.google.gson.reflect.TypeToken;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.bean.PageContentBean;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.contract.MainPageContract;
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.web.DownLoadFeedApi;
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.web.DownLoadFeedService;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.FeedService;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkMethod.RetrofitMethod;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.ResponseMethod.JsonResponse;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkClient;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkContract;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkMethod.OkHttpMethod;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.Map;
 
 /**
  * @author nqh 2018/7/16
@@ -27,21 +30,8 @@ public class MainPageModel implements MainPageContract.Model {
     @Override
     public void loadPageContent(int pageid) {
         mPageContentList.clear();
-        DownLoadFeedApi downLoadFeedApi = new DownLoadFeedApi();
-        DownLoadFeedService downLoadFeedService = downLoadFeedApi.getService();
-        Call<List<PageContentBean>> call_downloadmaopage = downLoadFeedService.getState(pageid);
-        call_downloadmaopage.enqueue(new Callback<List<PageContentBean>>() {
-            @Override
-            public void onResponse(Call<List<PageContentBean>> call, Response<List<PageContentBean>> response) {
-                if (null != response) {
-                    mListener.onSeccess(response.body());
-                }
-            }
+        NetworkClient.RequestBuilder requestBuilder = new NetworkClient.RequestBuilder()
+                .url("http://preapi.meipai.com/hot/feed_timeline.json?page=2");
 
-            @Override
-            public void onFailure(Call<List<PageContentBean>> call, Throwable t) {
-
-            }
-        });
     }
 }

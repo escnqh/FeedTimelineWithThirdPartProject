@@ -1,4 +1,4 @@
-package com.meitu.qihangni.feedtimelinewiththirdpartproject.ui;
+package com.meitu.qihangni.feedtimelinewiththirdpartproject.ui.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,21 +11,25 @@ import com.meitu.qihangni.feedtimelinewiththirdpartproject.bean.PageContentBean;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.contract.MainPageContract;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.presenter.MainPagePresenter;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class MainPageActivity extends BaseActivity<MainPageContract.View<PageContentBean>, MainPagePresenter> implements MainPageContract.View<PageContentBean>, MainPageContract.Presenter {
     private final String TAG = this.getClass().getName();
-    @BindView(R.id.recyclerview_mainpage)
-    RecyclerView mRecyclerviewMainpage;
+    private List<PageContentBean> mPageContentList = new ArrayList<>();
+    private MainPageContentAdapter mMainPageContentAdapter;
+    private RecyclerView mRecyclerviewMainpage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainpage);
-        ButterKnife.bind(this);
+        mRecyclerviewMainpage = findViewById(R.id.recyclerview_mainpage);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerviewMainpage.setLayoutManager(linearLayoutManager);
+        mMainPageContentAdapter = new MainPageContentAdapter(mPageContentList, this);
+        mRecyclerviewMainpage.setAdapter(mMainPageContentAdapter);
         this.requestPageContent(2);
     }
 
@@ -36,10 +40,13 @@ public class MainPageActivity extends BaseActivity<MainPageContract.View<PageCon
 
     @Override
     public void responsePageContent(List<PageContentBean> list) {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        mRecyclerviewMainpage.setLayoutManager(linearLayoutManager);
-        MainPageContentAdapter mainPageContentAdapter = new MainPageContentAdapter(list, this);
-        mRecyclerviewMainpage.setAdapter(mainPageContentAdapter);
+        mPageContentList.clear();
+        mPageContentList.addAll(list);
+        try {
+            mMainPageContentAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.meitu.qihangni.feedtimelinewiththirdpartproject.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -29,7 +28,7 @@ public class MainPageContentAdapter extends RecyclerView.Adapter<MainPageContent
     }
 
 
-    @SuppressLint("InflateParams")
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -50,8 +49,8 @@ public class MainPageContentAdapter extends RecyclerView.Adapter<MainPageContent
         if (mPageContentList.get(position).getRecommend_cover_pic() != null) {
             Glide.with(mContext).load(mPageContentList.get(position).getRecommend_cover_pic()).into(holder.mImageCover);
         }
-        holder.mTvContent.setText(mPageContentList.get(position).getMediaBean().getQq_share_caption());
-        holder.mTvUsername.setText(mPageContentList.get(position).getMediaBean().getUser().getScreen_name());
+        holder.mTvContent.setText(mPageContentList.get(position).getMedia().getQq_share_caption());
+        holder.mTvUsername.setText(mPageContentList.get(position).getMedia().getUser().getScreen_name());
     }
 
     @Override
@@ -67,7 +66,7 @@ public class MainPageContentAdapter extends RecyclerView.Adapter<MainPageContent
         public ViewHolder(View itemView) {
             super(itemView);
             mImageCover = itemView.findViewById(R.id.imgv_cover);
-            mTvContent = itemView.findViewById(R.id.tv_content);
+            mTvContent = itemView.findViewById(R.id.ev_content);
             mTvUsername = itemView.findViewById(R.id.tv_username);
         }
     }

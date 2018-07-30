@@ -1,4 +1,4 @@
-package com.meitu.qihangni.feedtimelinewiththirdpartproject.util;
+package com.meitu.qihangni.feedtimelinewiththirdpartproject.util.gsondeserializer;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -9,6 +9,7 @@ import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Type;
 
 /**
+ * 为了容错后台返回的结果
  * 拦截int或者Integer类型后台返回"" 或者 "null"，则设置默认值为 -1
  *
  * @author nqh 2018/7/16

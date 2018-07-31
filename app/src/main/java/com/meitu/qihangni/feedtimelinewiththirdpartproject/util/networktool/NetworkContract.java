@@ -20,11 +20,11 @@ public class NetworkContract {
     public interface NetworkMethod {
         void execute(NetworkClient.RequestBuilder requestBuilder, OkHttpClient okHttpClient, ResponseMethod responseMethod);
 
-        void cancel();
-    }
+        void restart();
 
-    public interface DownloadMethod extends NetworkMethod{
         void pause();
+
+        void cancel();
     }
 
     /**
@@ -35,9 +35,7 @@ public class NetworkContract {
         void onSucceed(Response response) throws IOException;
 
         void onFailed(String errorMsg);
-    }
 
-    public interface DownloadResponseMethod extends ResponseMethod {
         void onProcess(long total, long process);
 
         void onComplete(String filename);
@@ -48,6 +46,10 @@ public class NetworkContract {
      */
     public interface NetworkCallback<T> {
         void onSucceed(T t);
+
+        void onProcess(long total, long process);
+
+        void onComplete(String filename);
 
         void onFailed(String errorMsg);
 

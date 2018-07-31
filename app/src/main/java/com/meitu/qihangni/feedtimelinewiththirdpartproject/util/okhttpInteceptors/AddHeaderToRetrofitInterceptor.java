@@ -2,6 +2,7 @@ package com.meitu.qihangni.feedtimelinewiththirdpartproject.util.okhttpIntecepto
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Headers;
 import okhttp3.Interceptor;
@@ -27,11 +28,11 @@ public class AddHeaderToRetrofitInterceptor implements Interceptor {
         return chain.proceed(request);
     }
 
-    public void setHeaders(List<String> headers) {
+    public void setHeaders(Map<String, String> headers) {
         Headers.Builder headerBuilder = new Headers.Builder();
         if (headers != null && headers.size() > 0) {
-            for (int i = 0; i < headers.size(); i += 2) {
-                headerBuilder.add(headers.get(i), headers.get(i + 1));
+            for (String key : headers.keySet()) {
+                headerBuilder.add(key, headers.get(key));
             }
         }
         mHeaders = headerBuilder.build();

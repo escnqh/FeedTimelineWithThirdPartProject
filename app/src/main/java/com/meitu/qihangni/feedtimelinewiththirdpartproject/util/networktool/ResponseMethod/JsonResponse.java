@@ -33,12 +33,18 @@ public class JsonResponse<T> implements NetworkContract.ResponseMethod {
         } else {
             callback.onFailed("response.body is null!");
         }
-
-
     }
 
     @Override
     public void onFailed(String errorMsg) {
         callback.onFailed(errorMsg);
+    }
+
+    @Override
+    public void onProcess(long total, long process) {
+    }
+
+    @Override
+    public void onComplete(String filename) {
     }
 }

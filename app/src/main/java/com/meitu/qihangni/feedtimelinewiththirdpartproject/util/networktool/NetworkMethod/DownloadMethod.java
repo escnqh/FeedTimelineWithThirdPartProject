@@ -2,6 +2,8 @@ package com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.Net
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.DownLoadFile.DownloadInfo;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.DownLoadFile.DownloadObserver;
@@ -28,14 +30,16 @@ import okhttp3.Response;
 /**
  * @author nqh 2018/7/30
  */
-public class DownloadMethod implements NetworkContract.DownloadMethod {
+public class DownloadMethod implements NetworkContract.NetworkMethod {
+    private static String TAG = "DownloadMethod working ";
     private OkHttpClient mOkHttpClient;
     private NetworkClient.RequestBuilder mRequestBuilder;
-    private NetworkContract.DownloadResponseMethod mResponseMethod;
+    private NetworkContract.ResponseMethod mResponseMethod;
     private HashMap<String, Call> downCalls;
     private Context mContext;
+    private long mTotal = 0;
 
-    public DownloadMethod(Context appContext) {
+    public DownloadMethod(@NonNull Context appContext) {
         if (appContext instanceof Application) {
             mContext = appContext;
         } else {
@@ -49,7 +53,12 @@ public class DownloadMethod implements NetworkContract.DownloadMethod {
         this.downCalls = new HashMap<>();
         this.mOkHttpClient = okHttpClient;
         this.mRequestBuilder = requestBuilder;
-        this.mResponseMethod = (NetworkContract.DownloadResponseMethod) responseMethod;
+        this.mResponseMethod = responseMethod;
+        Log.i(TAG, "    start download " + mRequestBuilder.getUrl());
+        download();
+    }
+
+    private void continuedownload() {
         Observable.just(mRequestBuilder.getUrl())
                 .filter(s -> !downCalls.containsKey(s))//call的map已经有了,就证明正在下载,则这次不下载
                 .flatMap(s -> Observable.just(createDownloadInfo(s)))
@@ -62,17 +71,67 @@ public class DownloadMethod implements NetworkContract.DownloadMethod {
                     public void onNext(DownloadInfo downloadInfo) {
                         super.onNext(downloadInfo);
                         mResponseMethod.onProcess(downloadInfo.getTotal(), downloadInfo.getProgress());
+                        Log.i(TAG, "    process is " + downloadInfo.getProgress());
                     }
 
                     @Override
                     public void onComplete() {
                         mResponseMethod.onComplete(mDownloadInfo.getFileName());
+                        Log.i(TAG, "    file " + mDownloadInfo.getFileName() + " is complete");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        mResponseMethod.onFailed(e.getMessage());
+                    }
+                });
+    }
+
+    private void download() {
+        Observable.just(mRequestBuilder.getUrl())
+                .filter(s -> !downCalls.containsKey(s))//call的map已经有了,就证明正在下载,则这次不下载
+                .flatMap(s -> Observable.just(createDownloadInfo(s)))
+                .map(this::getRealFileName)//检测本地文件夹,生成新的文件名
+                .flatMap(downloadInfo -> Observable.create(new DownloadSubscribe(downloadInfo)))//下载
+                .observeOn(AndroidSchedulers.mainThread())//在主线程回调
+                .subscribeOn(Schedulers.io())//在子线程执行
+                .subscribe(new DownloadObserver() {//添加观察者
+                    @Override
+                    public void onNext(DownloadInfo downloadInfo) {
+                        super.onNext(downloadInfo);
+                        mResponseMethod.onProcess(downloadInfo.getTotal(), downloadInfo.getProgress());
+                        Log.i(TAG, "    process is " + downloadInfo.getProgress());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        if (mDownloadInfo.getProgress() == mTotal) {
+                            mResponseMethod.onComplete(mDownloadInfo.getFileName());
+                            Log.i(TAG, "    file " + mDownloadInfo.getFileName() + " is complete");
+                        } else {
+                            Log.i(TAG, "    file " + mDownloadInfo.getFileName() + " is pause,total: " + mTotal + " process: " + mDownloadInfo.getProgress());
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        mResponseMethod.onFailed(e.getMessage());
                     }
                 });
     }
 
     @Override
+    public void restart() {
+        Log.i(TAG, "    restart download " + mRequestBuilder.getUrl());
+        download();
+    }
+
+    @Override
     public void pause() {
+        Log.i(TAG, "    pause download " + mRequestBuilder.getUrl());
         Call call = downCalls.get(mRequestBuilder.getUrl());
         if (call != null) {
             call.cancel();
@@ -89,6 +148,7 @@ public class DownloadMethod implements NetworkContract.DownloadMethod {
     private DownloadInfo createDownloadInfo(String url) {
         DownloadInfo downloadInfo = new DownloadInfo(url);
         long contentLength = getContentLength(url);
+        Log.i(TAG, "    length is " + contentLength);
         downloadInfo.setTotal(contentLength);
         String filename = url.substring(url.lastIndexOf("/"));
         downloadInfo.setFileName(filename);
@@ -96,6 +156,7 @@ public class DownloadMethod implements NetworkContract.DownloadMethod {
     }
 
     private DownloadInfo getRealFileName(DownloadInfo downloadInfo) {
+        Log.i(TAG, "    start getFileName " + mRequestBuilder.getUrl());
         String fileName = downloadInfo.getFileName();
         long downloadLength = 0, contentLength = downloadInfo.getTotal();
         File file = new File(mContext.getFilesDir(), fileName);
@@ -122,6 +183,7 @@ public class DownloadMethod implements NetworkContract.DownloadMethod {
         //设置改变过的文件名/大小
         downloadInfo.setProgress(downloadLength);
         downloadInfo.setFileName(file.getName());
+        Log.i(TAG, "    successed getFileName " + fileName);
         return downloadInfo;
     }
 
@@ -131,15 +193,20 @@ public class DownloadMethod implements NetworkContract.DownloadMethod {
      * @return 下载长度
      */
     private long getContentLength(String downloadUrl) {
+        if (mTotal != 0) {
+            return mTotal;
+        }
+        Log.i(TAG, "    start getContentLength " + mRequestBuilder.getUrl());
         Request request = new Request.Builder()
                 .url(downloadUrl)
                 .build();
         try {
             Response response = mOkHttpClient.newCall(request).execute();
             if (null != response && response.isSuccessful()) {
-                long contentLength = response.body().contentLength();
+                Log.i(TAG, "    start getContentLength " + "response is succeed");
+                mTotal = response.body().contentLength();
                 response.close();
-                return contentLength == 0 ? DownloadInfo.TOTAL_ERROR : contentLength;
+                return mTotal == 0 ? DownloadInfo.TOTAL_ERROR : mTotal;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -168,6 +235,7 @@ public class DownloadMethod implements NetworkContract.DownloadMethod {
             downCalls.put(url, call);
             Response response = call.execute();
             File file = new File(mContext.getFilesDir(), mDownloadInfo.getFileName());
+            Log.i(TAG, "file directory：  " + mContext.getFilesDir().toString());
             InputStream inputStream = null;
             FileOutputStream fileOutputStream = null;
             try {

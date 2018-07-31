@@ -69,6 +69,14 @@ public class OkHttpMethod implements NetworkContract.NetworkMethod {
     }
 
     @Override
+    public void restart() {
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
     public void cancel() {
         if (call != null) {
             call.cancel();

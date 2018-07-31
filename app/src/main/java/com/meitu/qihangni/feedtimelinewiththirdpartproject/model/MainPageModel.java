@@ -3,12 +3,10 @@ package com.meitu.qihangni.feedtimelinewiththirdpartproject.model;
 import com.google.gson.reflect.TypeToken;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.bean.PageContentBean;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.contract.MainPageContract;
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.FeedService;
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkMethod.RetrofitMethod;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkMethod.DownloadMethod;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.ResponseMethod.JsonResponse;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkClient;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkContract;
-import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkMethod.OkHttpMethod;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +30,26 @@ public class MainPageModel implements MainPageContract.Model {
         mPageContentList.clear();
         NetworkClient.RequestBuilder requestBuilder = new NetworkClient.RequestBuilder()
                 .url("http://preapi.meipai.com/hot/feed_timeline.json?page=2");
+        Map<String, String> map = new HashMap<>();
+        NetworkClient.getInstance(requestBuilder, new DownloadMethod(null)).execute(new JsonResponse<>(new NetworkContract.NetworkCallback<List<PageContentBean>>() {
+            @Override
+            public void onSucceed(List<PageContentBean> pageContentBeans) {
+                mListener.onSeccess(pageContentBeans);
+            }
 
+            @Override
+            public void onProcess(long total, long process) {
+            }
+
+            @Override
+            public void onComplete(String filename) {
+            }
+
+            @Override
+            public void onFailed(String errorMsg) {
+                mListener.onFailed(0, errorMsg);
+            }
+        }, new TypeToken<List<PageContentBean>>() {
+        }.getType()));
     }
 }

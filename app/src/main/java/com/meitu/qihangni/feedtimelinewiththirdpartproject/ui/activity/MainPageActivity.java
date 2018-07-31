@@ -10,6 +10,7 @@ import com.meitu.qihangni.feedtimelinewiththirdpartproject.base.BaseActivity;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.bean.PageContentBean;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.contract.MainPageContract;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.presenter.MainPagePresenter;
+import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.networktool.NetworkMethod.RetrofitMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class MainPageActivity extends BaseActivity<MainPageContract.View<PageCon
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainpage);
+        RetrofitMethod retrofitMethod = new RetrofitMethod();
         mRecyclerviewMainpage = findViewById(R.id.recyclerview_mainpage);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerviewMainpage.setLayoutManager(linearLayoutManager);

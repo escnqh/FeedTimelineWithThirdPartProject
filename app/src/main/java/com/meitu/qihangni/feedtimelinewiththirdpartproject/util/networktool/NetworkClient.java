@@ -5,7 +5,9 @@ import android.support.annotation.NonNull;
 import com.meitu.qihangni.feedtimelinewiththirdpartproject.util.okhttpInteceptors.AddHeaderToRetrofitInterceptor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -23,24 +25,34 @@ public class NetworkClient {
     private static NetworkContract.NetworkMethod mNetworkMethod;
     private static RequestBuilder mRequest;
     private static OkHttpClient mOkHttpClient;
+    private static NetworkContract.ResponseMethod mResponseMethod;
 
 
     private NetworkClient() {
-        AddHeaderToRetrofitInterceptor mAddHeaderToRetrofitInterceptor = new AddHeaderToRetrofitInterceptor();
-        mAddHeaderToRetrofitInterceptor.setHeaders(mRequest.getHeaders());
+//        AddHeaderToRetrofitInterceptor mAddHeaderToRetrofitInterceptor = new AddHeaderToRetrofitInterceptor();
+//        mAddHeaderToRetrofitInterceptor.setHeaders(mRequest.getHeaders());
         mOkHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(mAddHeaderToRetrofitInterceptor)
+//                .addInterceptor(mAddHeaderToRetrofitInterceptor)
                 .connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS)
                 .readTimeout(DEFAULT_READ_TIME_OUT, TimeUnit.SECONDS)
                 .build();
     }
 
     public void execute(NetworkContract.ResponseMethod responseMethod) {
-        mNetworkMethod.execute(mRequest, mOkHttpClient, responseMethod);
+        mResponseMethod = responseMethod;
+        mNetworkMethod.execute(mRequest, mOkHttpClient, mResponseMethod);
     }
 
     public void cancel() {
         mNetworkMethod.cancel();
+    }
+
+    public void pause() {
+        mNetworkMethod.pause();
+    }
+
+    public void restart() {
+        mNetworkMethod.restart();
     }
 
     private static class InstanceHolder {
@@ -59,15 +71,15 @@ public class NetworkClient {
     }
 
     public static class RequestBuilder {
-        private List<String> headers = new ArrayList<>();
-        private String url;
-        private String string;
-        private List<String> params = new ArrayList<>();
-        private NetworkContract.HttpMethod httpMethod = NetworkContract.HttpMethod.GET;
-        private RequestBody requestBody;
+        private Map<String, String> headers = new HashMap<>();//请求头
+        private Map<String, String> params = new HashMap<>();//参数列表
+        private NetworkContract.HttpMethod httpMethod = NetworkContract.HttpMethod.GET;//请求方法
+        private String url;//Url
+        private String string;//其他参数
+        private RequestBody requestBody;//请求体
 
-        public RequestBuilder addParam(String param) {
-            params.add(param);
+        public RequestBuilder addParam(String key, String value) {
+            params.put(key, value);
             return this;
         }
 
@@ -87,8 +99,7 @@ public class NetworkClient {
         }
 
         public RequestBuilder addHeader(String key, String value) {
-            headers.add(key);
-            headers.add(value);
+            headers.put(key, value);
             return this;
         }
 
@@ -101,7 +112,7 @@ public class NetworkClient {
             return getInstance(this, networkMethod);
         }
 
-        public List<String> getHeaders() {
+        public Map<String, String> getHeaders() {
             if (headers.size() == 0) {
                 return null;
             }
@@ -112,7 +123,7 @@ public class NetworkClient {
             return httpMethod;
         }
 
-        public List<String> getParams() {
+        public Map<String, String> getParams() {
             if (params.size() == 0) {
                 return null;
             }
